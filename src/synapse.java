@@ -1,4 +1,5 @@
 // Created by Maxim Sarandev - 1406519
+// Last Edit - 7/11/17
 
 public class synapse {
 

@@ -1,11 +1,12 @@
 // Created by Maxim Sarandev - 1406519
+// Last Edit - 7/11/17
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class exec {
     // create the map to store the pos int & synapse dta
-    Map<String, synapse> db = new HashMap<String, synapse>();
+    private final Map<String, synapse> db = new HashMap<>();
 
 
     // generate an empty network based on num of synapses
@@ -52,10 +53,6 @@ public class exec {
         // init the class
         exec ex_main = new exec();
 
-        // var declaration
-        String gen_inp = "";
-        int input = 0;
-
         Scanner reader = new Scanner(System.in);  // Reading from System.in
         System.out.println("0 to exit");
         System.out.println("Enter a number (min 4): ");
@@ -71,7 +68,7 @@ public class exec {
             System.out.println("2. Test");
             System.out.println("3. Exit");
 
-            input = reader.nextInt(); // read the output
+            int input = reader.nextInt(); // read the output
 
             if(input == 1){
                 // Train
@@ -90,12 +87,10 @@ public class exec {
 
                 // TRAINING SCENARIO
 
-                // splice the string
-                String op_i = ""; // current vars
-                String op_o = ""; // current vars
-
                 // FIRST - trim all spaces
+                String op_i;
                 op_i = inp.replaceAll("\\s+",""); //trim input
+                String op_o;
                 op_o = out.replaceAll("\\s+",""); //trim output
 
                 for(int x=0;x<inp.length();x++){
@@ -142,63 +137,27 @@ public class exec {
 
                 //ask for input
                 System.out.println("--------------------------");
-                System.out.println("Enter the input (No Commas): ");
+                System.out.println("Enter the input (Enter X to test): ");
 
                 String inp = reader.next(); // capture the string
 
                 //ask for output
                 System.out.println("--------------------------");
-                System.out.println("Enter the output (No Commas): ");
+                System.out.println("Enter the output (Enter X to test): ");
 
                 String out = reader.next(); // capture the string
 
 
                 // check what we're looking for
-                if(inp.length() == 0){
+                if(inp.equals("X")) {
                     // looking for input, from output
 
-                    if(ex_main.db.isEmpty()){
-                        // neural network populated
+                    return;
+                }else if(out.equals("X")){
+                    // looking for output
 
-                        // splice the string
-                        String op_o = ""; // current vars
-
-                        // FIRST - trim all spaces
-                        op_o = out.replaceAll("\\s+",""); //trim output
-
-                        // set x to be 0
-                        int x = 0;
-
-                        for(int y=0;y<out.length();y++){
-                            // splice output
-
-                            op_o = out.substring(y,y+1);
-
-                            // Generations
-                            if(op_o.equals("1") &
-                                    ex_main.db.get(String.valueOf(y)+String.valueOf(x)).getWeight() == 1){
-                                // both nodes 1, set weight & fire to 1
-                                // find the neuron and change states
-
-                                gen_inp += "1"; // add the 1 to the input
-
-                            }else
-
-                                gen_inp += "0"; // add the 0 to the input
-
-                            }
-
-                            // increment x
-                            x++;
-                        }
-
-
-                        System.out.println("-------------");
-                        System.out.println("Generated input: " + gen_inp);
-
-                    }else{
-                        System.out.println("Empty network, run Train first");
-                    }
+                    return;
+                }
             }else if(input == 3){
                 n = 0;
                 System.out.println("Exiting...");
