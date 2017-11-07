@@ -1,10 +1,11 @@
 // Created by Maxim Sarandev - 1406519
 // Last Edit - 7/11/17
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Random;
-import java.util.Timer;
 
 public class exec {
     // create the map to store the pos int & synapse dta
@@ -14,7 +15,7 @@ public class exec {
     // generate an empty network based on num of synapses
     private void generate_network(int n) {
         if (n >= 4) {
-            long startTime = System.nanoTime(); // init
+            Instant startT = Instant.now(); // define the starter
 
             System.out.println("Generating Synapse Network");
             System.out.println("--------------------------");
@@ -22,26 +23,23 @@ public class exec {
 
             // create the rows
             for (int x = 0; x < n / 2; x++) {
-                startTime = System.currentTimeMillis();// init the timer
-                // create the columns
-                //System.out.print("| ");
+                startT = Instant.now(); // start the timer
+
 
                 for (int y = 0; y < n / 2; y++) {
                     synapse ff1 = new synapse(0, 0); // create a new synapse
 
                     // push the synapse to the db
                     db.put(String.valueOf(y) + String.valueOf(x), ff1);
-
-                    //System.out.print(ff1.displ() + " "); // print the synapse dta
                 }
                 System.out.print("."); // wait timer
             }
-            long endTime = System.nanoTime(); // end the timer
+            Instant endT = Instant.now(); // end the timer
 
             // alert the user to the progress
             System.out.println("\nSynapse network generated, nodes (X,Y): " + String.valueOf(n));
             // display timing message
-            System.out.println("That took " + ((endTime - startTime)/1000000) + " milliseconds");
+            System.out.println("Time taken: " + (Duration.between(startT, endT)));
         }
     }
 
@@ -181,9 +179,9 @@ public class exec {
                         }
                     }
                 }
-
-                // print the trained network
-                //ex_main.print_out(n);
+                // network trained
+                System.out.println("--------");
+                System.out.println("Network trained!");
 
             } else if (input == 2) {
                 // Test
