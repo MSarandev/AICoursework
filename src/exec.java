@@ -79,6 +79,12 @@ public class exec {
         }
     }
 
+    // generic trim spaces method
+    private String trim_custom(String x){
+        x = x.replaceAll("\\s+", ""); //trim input
+
+        return x; // return the string
+    }
 
     public static void main(String args[]) {
         // init the class
@@ -139,10 +145,10 @@ public class exec {
                 // TRAINING SCENARIO
 
                 // FIRST - trim all spaces
-                String op_i;
-                op_i = inp.replaceAll("\\s+", ""); //trim input
-                String op_o;
-                op_o = out.replaceAll("\\s+", ""); //trim output
+                String op_i; // def
+                String op_o; // def
+                op_i = ex_main.trim_custom(inp); // call the trim method
+                op_o = ex_main.trim_custom(out); // call the trim method
 
                 for (int x = 0; x < inp.length(); x++) {
 
@@ -186,28 +192,95 @@ public class exec {
             } else if (input == 2) {
                 // Test
 
-                //ask for input
+                // the user must parse an output
+                // the algorithm then produces the input
+                // based on the network
+
+                System.out.println(n);
+
+                String inp = ""; // define the input string
+                String out = ""; // define the output string
+
                 System.out.println("--------------------------");
-                System.out.println("Enter the input (Enter X to test): ");
+                System.out.println("Enter the input (can be incomplete/null): ");
 
-                String inp = reader.next(); // capture the string
+                inp = reader.next(); // store the input
 
-                //ask for output
                 System.out.println("--------------------------");
-                System.out.println("Enter the output (Enter X to test): ");
+                System.out.println("Enter the output: ");
 
-                String out = reader.next(); // capture the string
+                out = reader.next(); // store the input
 
 
-                // check what we're looking for
-                if (inp.equals("X")) {
-                    // looking for input, from output
+                // Check if the output matches
+                if(out.length() == n/2){
+                    // matches
 
-                    return;
-                } else if (out.equals("X")) {
-                    // looking for output
+                    // update UI
+                    System.out.println("-------");
+                    System.out.print("Working");
 
-                    return;
+                    String gen_inp = ""; // define the storage string
+
+                    // FIRST - trim all spaces
+                    String op_i; // def
+                    String op_o; // def
+                    op_i = ex_main.trim_custom(inp); // call the trim method
+                    op_o = ex_main.trim_custom(out); // call the trim method
+
+                    for (int y = 0; y < n/2; y++) {
+                        // for each column
+                        for (int x = 0; x < n/2; x++) {
+                            // for each row
+
+                            op_o = out.substring(y, y + 1); // splice the string
+
+                            // get the current synapse
+                            synapse s1 = ex_main.db.get(String.valueOf(y) + String.valueOf(x));
+
+                            // check the synapse pointers
+                            if(s1.getFire_state() == 1){
+                                // the value is either 11 or 00
+
+                                if(s1.getWeight() == 1){
+                                    // the val is 1 in input
+
+                                    gen_inp += "1"; // append to string
+                                }else if(s1.getWeight() == 0){
+                                    // the val is 0 in input
+
+                                    gen_inp += "0";
+                                }
+                            }else{
+                                // value is not 11, or 00
+
+                                // check the output for clues
+                                if(op_o.equals("0")){
+                                    // input == 1
+
+                                    gen_inp += "1";
+                                }else if(op_o.equals("1")){
+                                    // input == 0
+
+                                    gen_inp += "0";
+                                }
+                            }
+
+                        }
+
+                        // update UI
+                        System.out.print(".");
+                    }
+
+                    // trim generated string
+                    gen_inp = gen_inp.substring(0,n/2);
+
+                    System.out.println("\n--------------");
+                    System.out.println("Generated input --> " + gen_inp);
+
+                }else{
+                    // output must match
+                    System.out.println("Output must match nodes. Halting.");
                 }
             }else if (input == 0){
                 ex_main.print_out(n); // call the print method
