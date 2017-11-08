@@ -86,6 +86,28 @@ public class exec {
         return x; // return the string
     }
 
+    // method to return the misakigned indeces
+    // parse -> index y, input string, net size n, value to look for q_1
+    private String ret_indeces(int y, String inp, int n, int q_1){
+        String return_me = ""; // def the container
+
+        // check if the input is full (i.e. equal to the nodes)
+        if(inp.length() == n/2) {
+            // input ok, check if it exists in the input
+            if (!inp.substring(y, y + 1).equals(String.valueOf(q_1))) {
+                // difference found
+                // return the index
+                return_me = String.valueOf(y);
+            }
+        }else{
+            // input empty, return N/A
+            return_me = "N/A";
+        }
+
+        // return the obj
+        return return_me;
+    }
+
     public static void main(String args[]) {
         // init the class
         exec ex_main = new exec();
@@ -201,6 +223,8 @@ public class exec {
                 String inp = ""; // define the input string
                 String out = ""; // define the output string
 
+                String diff_indeces = ""; // define the string
+
                 System.out.println("--------------------------");
                 System.out.println("Enter the input (can be incomplete/null): ");
 
@@ -215,6 +239,9 @@ public class exec {
                 // Check if the output matches
                 if(out.length() == n/2){
                     // matches
+
+                    // time the execution
+                    Instant startT = Instant.now(); // define the starter
 
                     // update UI
                     System.out.println("-------");
@@ -246,10 +273,16 @@ public class exec {
                                     // the val is 1 in input
 
                                     gen_inp += "1"; // append to string
+
+                                    // check if the input has the same bit
+                                    diff_indeces = ex_main.ret_indeces(y,inp,n,1);
                                 }else if(s1.getWeight() == 0){
                                     // the val is 0 in input
 
                                     gen_inp += "0";
+
+                                    // check if the input has the same bit
+                                    diff_indeces = ex_main.ret_indeces(y,inp,n,0);
                                 }
                             }else{
                                 // value is not 11, or 00
@@ -259,10 +292,16 @@ public class exec {
                                     // input == 1
 
                                     gen_inp += "1";
+
+                                    // check if the input has the same bit
+                                    diff_indeces = ex_main.ret_indeces(y,inp,n,1);
                                 }else if(op_o.equals("1")){
                                     // input == 0
 
                                     gen_inp += "0";
+
+                                    // check if the input has the same bit
+                                    diff_indeces = ex_main.ret_indeces(y,inp,n,0);
                                 }
                             }
 
@@ -272,11 +311,19 @@ public class exec {
                         System.out.print(".");
                     }
 
+                    Instant endT = Instant.now(); // end the timer
+
                     // trim generated string
                     gen_inp = gen_inp.substring(0,n/2);
 
                     System.out.println("\n--------------");
-                    System.out.println("Generated input --> " + gen_inp);
+                    // update the UI
+                    // display timing message
+                    System.out.println("Time taken: " + (Duration.between(startT, endT)));
+                    System.out.println("Generated input          --> " + gen_inp);
+                    System.out.println("Original input           --> " + op_i);
+                    System.out.println("Difference (len)         --> " + (gen_inp.length()-op_i.length()));
+                    System.out.println("Difference at last index --> " + diff_indeces);
 
                 }else{
                     // output must match
