@@ -1,5 +1,5 @@
 // Created by Maxim Sarandev - 1406519
-// Last Edit - 7/11/17
+// Last Edit - 9/11/17
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -10,6 +10,10 @@ import java.util.Random;
 public class exec {
     // create the map to store the pos int & synapse dta
     private final Map<String, synapse> db = new HashMap<>();
+
+    // storage string for training output
+    String train_output = "";
+    String train_input = "";
 
 
     // generate an empty network based on num of synapses
@@ -86,9 +90,11 @@ public class exec {
         return x; // return the string
     }
 
+
+    // DEPRECATING
     // method to return the misakigned indeces
     // parse -> index y, input string, net size n, value to look for q_1
-    private String ret_indeces(int y, String inp, int n, int q_1){
+    /*private String ret_indeces(int y, String inp, int n, int q_1){
         String return_me = ""; // def the container
 
         // check if the input is full (i.e. equal to the nodes)
@@ -106,7 +112,7 @@ public class exec {
 
         // return the obj
         return return_me;
-    }
+    }*/
 
     public static void main(String args[]) {
         // init the class
@@ -133,8 +139,8 @@ public class exec {
             if (input == 1) {
                 // Train
 
-                String inp = ""; // define the input string
-                String out = ""; // define the output string
+                String inp; // define the input string
+                String out; // define the output string
 
                 //Synaptic network generated - ask for input
                 System.out.println("--------------------------");
@@ -172,38 +178,37 @@ public class exec {
                 op_i = ex_main.trim_custom(inp); // call the trim method
                 op_o = ex_main.trim_custom(out); // call the trim method
 
-                for (int x = 0; x < inp.length(); x++) {
+                // Store the output to the variable
+                ex_main.train_output = op_o;
 
+                // Store the input to the variable
+                ex_main.train_input = op_i;
+
+                for (int x = 0; x < inp.length(); x++) {
                     // splice input
                     op_i = inp.substring(x, x + 1);
 
                     for (int y = 0; y < out.length(); y++) {
                         // splice output
-
                         op_o = out.substring(y, y + 1);
 
                         // Generations
-                        if (op_i.equals("1") & op_o.equals("1")) {
+                        if (op_i.equals("1") && op_o.equals("1")) {
                             // both nodes 1, set weight & fire to 1
                             // find the neuron and change states
 
-                            if (ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getWeight() != 1) {
+                            if (ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getWeight() != 1 &
+                                    ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getFire_state() != 1) {
+                                // change weight
                                 ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setWeight(1);
-                            }
-
-                            if (ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getFire_state() != 1) {
+                                // change fire-state
                                 ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(1);
                             }
-                        } else if (op_i.equals("0") & op_o.equals("0")) {
-                            // same as 1 1, set weight/fire
-
-                            if (ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getWeight() != 1) {
-                                ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setWeight(0);
-                            }
-
-                            if (ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getFire_state() != 1) {
-                                ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(1);
-                            }
+                        }else{
+                            // change weight
+                            ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setWeight(0);
+                            // change fire-state
+                            ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(0);
                         }
                     }
                 }
@@ -220,13 +225,13 @@ public class exec {
 
                 System.out.println(n);
 
-                String inp = ""; // define the input string
-                String out = ""; // define the output string
+                String inp; // define the input string
+                String out; // define the output string
 
                 String diff_indeces = ""; // define the string
 
                 System.out.println("--------------------------");
-                System.out.println("Enter the input (can be incomplete/null): ");
+                System.out.println("Enter the input: ");
 
                 inp = reader.next(); // store the input
 
@@ -235,9 +240,8 @@ public class exec {
 
                 out = reader.next(); // store the input
 
-
-                // Check if the output matches
-                if(out.length() == n/2){
+                // Check if the input matches the length
+                if(inp.length() == n/2){
                     // matches
 
                     // time the execution
@@ -247,7 +251,8 @@ public class exec {
                     System.out.println("-------");
                     System.out.print("Working");
 
-                    String gen_inp = ""; // define the storage string
+                    String gen_out = ""; // define the storage string
+                    String current_out = "0"; // overridable string
 
                     // FIRST - trim all spaces
                     String op_i; // def
@@ -260,52 +265,21 @@ public class exec {
                         for (int x = 0; x < n/2; x++) {
                             // for each row
 
-                            op_o = out.substring(y, y + 1); // splice the string
+                            op_i = inp.substring(y, y + 1); // splice the string
 
                             // get the current synapse
                             synapse s1 = ex_main.db.get(String.valueOf(y) + String.valueOf(x));
 
                             // check the synapse pointers
-                            if(s1.getFire_state() == 1){
-                                // the value is either 11 or 00
-
-                                if(s1.getWeight() == 1){
-                                    // the val is 1 in input
-
-                                    gen_inp += "1"; // append to string
-
-                                    // check if the input has the same bit
-                                    diff_indeces = ex_main.ret_indeces(y,inp,n,1);
-                                }else if(s1.getWeight() == 0){
-                                    // the val is 0 in input
-
-                                    gen_inp += "0";
-
-                                    // check if the input has the same bit
-                                    diff_indeces = ex_main.ret_indeces(y,inp,n,0);
-                                }
+                            if(op_i.equals("1") && s1.getWeight() == 1){
+                                current_out = "1"; // change the cont
                             }else{
-                                // value is not 11, or 00
-
-                                // check the output for clues
-                                if(op_o.equals("0")){
-                                    // input == 1
-
-                                    gen_inp += "1";
-
-                                    // check if the input has the same bit
-                                    diff_indeces = ex_main.ret_indeces(y,inp,n,1);
-                                }else if(op_o.equals("1")){
-                                    // input == 0
-
-                                    gen_inp += "0";
-
-                                    // check if the input has the same bit
-                                    diff_indeces = ex_main.ret_indeces(y,inp,n,0);
-                                }
+                                current_out = "0"; // change the cont
                             }
 
                         }
+                        // push to the generated output
+                        gen_out += current_out;
 
                         // update UI
                         System.out.print(".");
@@ -313,18 +287,12 @@ public class exec {
 
                     Instant endT = Instant.now(); // end the timer
 
-                    // trim generated string
-                    gen_inp = gen_inp.substring(0,n/2);
-
                     System.out.println("\n--------------");
                     // update the UI
                     // display timing message
                     System.out.println("Time taken: " + (Duration.between(startT, endT)));
-                    System.out.println("Generated input          --> " + gen_inp);
-                    System.out.println("Original input           --> " + op_i);
-                    System.out.println("Difference (len)         --> " + (gen_inp.length()-op_i.length()));
-                    System.out.println("Difference at last index --> " + diff_indeces);
-
+                    System.out.println("Generated output          --> " + gen_out);
+                    System.out.println("Original output           --> " + op_o);
                 }else{
                     // output must match
                     System.out.println("Output must match nodes. Halting.");
