@@ -90,30 +90,6 @@ public class exec {
         return x; // return the string
     }
 
-
-    // DEPRECATING
-    // method to return the misakigned indeces
-    // parse -> index y, input string, net size n, value to look for q_1
-    /*private String ret_indeces(int y, String inp, int n, int q_1){
-        String return_me = ""; // def the container
-
-        // check if the input is full (i.e. equal to the nodes)
-        if(inp.length() == n/2) {
-            // input ok, check if it exists in the input
-            if (!inp.substring(y, y + 1).equals(String.valueOf(q_1))) {
-                // difference found
-                // return the index
-                return_me = String.valueOf(y);
-            }
-        }else{
-            // input empty, return N/A
-            return_me = "N/A";
-        }
-
-        // return the obj
-        return return_me;
-    }*/
-
     public static void main(String args[]) {
         // init the class
         exec ex_main = new exec();
