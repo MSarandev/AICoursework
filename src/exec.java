@@ -16,6 +16,17 @@ public class exec {
     String train_input = "";
 
 
+    // menu printing
+    private void print_menu(){
+        // ask on how to proceed
+        System.out.println("--------------------------");
+        System.out.println("0. Display network (might take a long time)");
+        System.out.println("1. Train");
+        System.out.println("2. Test");
+        System.out.println("3. Hamming difference");
+        System.out.println("4. Exit");
+    }
+
     // generate an empty network based on num of synapses
     private void generate_network(int n) {
         if (n >= 4) {
@@ -45,6 +56,59 @@ public class exec {
             // display timing message
             System.out.println("Time taken: " + (Duration.between(startT, endT)));
         }
+    }
+
+    // train the network
+    private void train_network(String i1, String o1){
+        String inp = i1; // define the input string
+        String out = o1; // define the output string
+
+        // TRAINING SCENARIO
+
+        // FIRST - trim all spaces
+        String op_i; // def
+        String op_o; // def
+        op_i = trim_custom(inp); // call the trim method
+        op_o = trim_custom(out); // call the trim method
+
+        // Store the output to the variable
+        train_output = op_o;
+
+        // Store the input to the variable
+        train_input = op_i;
+
+        for (int x = 0; x < inp.length(); x++) {
+            // splice input
+            op_i = inp.substring(x, x + 1);
+
+            for (int y = 0; y < out.length(); y++) {
+                // splice output
+                op_o = out.substring(y, y + 1);
+
+                // Generations
+                if (op_i.equals("1") && op_o.equals("1")) {
+                    // both nodes 1, set weight & fire to 1
+                    // find the neuron and change states
+
+                    if (db.get(String.valueOf(y) + String.valueOf(x)).getWeight() != 1 &
+                            db.get(String.valueOf(y) + String.valueOf(x)).getFire_state() != 1) {
+                        // change weight
+                        db.get(String.valueOf(y) + String.valueOf(x)).setWeight(1);
+                        // change fire-state
+                        db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(1);
+                    }
+                }else{
+                    // change weight
+                    db.get(String.valueOf(y) + String.valueOf(x)).setWeight(0);
+                    // change fire-state
+                    db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(0);
+                }
+            }
+        }
+        // network trained
+        System.out.println("--------");
+        System.out.println("Network trained!");
+
     }
 
     // print out the NN
@@ -103,20 +167,15 @@ public class exec {
 
         while (n != 0) {
             // continuous execution
-            // ask on how to proceed
-            System.out.println("--------------------------");
-            System.out.println("0. Display network (might take a long time)");
-            System.out.println("1. Train");
-            System.out.println("2. Test");
-            System.out.println("3. Exit");
+            ex_main.print_menu(); // print the menu
+
+            String inp;
+            String out;
 
             int input = reader.nextInt(); // read the output
 
             if (input == 1) {
                 // Train
-
-                String inp; // define the input string
-                String out; // define the output string
 
                 //Synaptic network generated - ask for input
                 System.out.println("--------------------------");
@@ -146,52 +205,8 @@ public class exec {
                     System.out.println(out);
                 }
 
-                // TRAINING SCENARIO
-
-                // FIRST - trim all spaces
-                String op_i; // def
-                String op_o; // def
-                op_i = ex_main.trim_custom(inp); // call the trim method
-                op_o = ex_main.trim_custom(out); // call the trim method
-
-                // Store the output to the variable
-                ex_main.train_output = op_o;
-
-                // Store the input to the variable
-                ex_main.train_input = op_i;
-
-                for (int x = 0; x < inp.length(); x++) {
-                    // splice input
-                    op_i = inp.substring(x, x + 1);
-
-                    for (int y = 0; y < out.length(); y++) {
-                        // splice output
-                        op_o = out.substring(y, y + 1);
-
-                        // Generations
-                        if (op_i.equals("1") && op_o.equals("1")) {
-                            // both nodes 1, set weight & fire to 1
-                            // find the neuron and change states
-
-                            if (ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getWeight() != 1 &
-                                    ex_main.db.get(String.valueOf(y) + String.valueOf(x)).getFire_state() != 1) {
-                                // change weight
-                                ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setWeight(1);
-                                // change fire-state
-                                ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(1);
-                            }
-                        }else{
-                            // change weight
-                            ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setWeight(0);
-                            // change fire-state
-                            ex_main.db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(0);
-                        }
-                    }
-                }
-                // network trained
-                System.out.println("--------");
-                System.out.println("Network trained!");
-
+                // call the train network method
+                ex_main.train_network(inp, out);
             } else if (input == 2) {
                 // Test
 
@@ -200,9 +215,6 @@ public class exec {
                 // based on the network
 
                 System.out.println(n);
-
-                String inp; // define the input string
-                String out; // define the output string
 
                 String diff_indeces = ""; // define the string
 
@@ -228,7 +240,15 @@ public class exec {
                     System.out.print("Working");
 
                     String gen_out = ""; // define the storage string
-                    String current_out = "0"; // overridable string
+                    String current_out = ""; // overridable string
+
+                    // push zeros to fill the output
+                    for (int ch1 = 0; ch1 < n/2; ch1++){
+                        gen_out+="0";
+                    }
+
+                    // create a char array
+                    char[] toChar1 = gen_out.toCharArray();
 
                     // FIRST - trim all spaces
                     String op_i; // def
@@ -240,22 +260,23 @@ public class exec {
                         // for each column
                         for (int x = 0; x < n/2; x++) {
                             // for each row
-
                             op_i = inp.substring(y, y + 1); // splice the string
 
                             // get the current synapse
-                            synapse s1 = ex_main.db.get(String.valueOf(y) + String.valueOf(x));
+                            synapse s1 = ex_main.db.get(String.valueOf(x) + String.valueOf(y));
 
                             // check the synapse pointers
-                            if(op_i.equals("1") && s1.getWeight() == 1){
-                                current_out = "1"; // change the cont
-                            }else{
-                                current_out = "0"; // change the cont
+                            if (op_i.equals("1")) {
+                                if(s1.getWeight() == 1){
+                                    toChar1[x] = '1';
+                                }else{
+                                    toChar1[x] = '0';
+                                }
                             }
-
                         }
-                        // push to the generated output
-                        gen_out += current_out;
+
+                        // update the whole string
+                        gen_out = String.valueOf(toChar1);
 
                         // update UI
                         System.out.print(".");
@@ -271,12 +292,39 @@ public class exec {
                     System.out.println("Original output           --> " + op_o);
                 }else{
                     // output must match
-                    System.out.println("Output must match nodes. Halting.");
+                    System.out.println("Input must match nodes. Halting.");
                 }
             }else if (input == 0){
                 ex_main.print_out(n); // call the print method
 
-            }else if(input == 3){
+            }else if (input == 3){
+                // Testing with Hamming differences
+                System.out.println("------------");
+                System.out.println("Start with empty network");
+                System.out.println("Train at least 2 times !");
+
+                // define the storage vars
+                String inputs[]; // def
+                String outputs[]; // def
+                String inp_x; // def
+                String out_x; // def
+
+
+                // ask for the initial input/outputs
+                System.out.println("------------");
+                System.out.println("Enter the input: ");
+
+                inp_x = reader.next(); // capture input
+
+                System.out.println("------------");
+                System.out.println("Enter the output: ");
+
+                out_x = reader.next(); // capture output
+
+                // call the train network method
+                ex_main.train_network(inp_x, out_x);
+
+            }else if(input == 4){
                 n = 0;
                 System.out.println("Exiting...");
             }
