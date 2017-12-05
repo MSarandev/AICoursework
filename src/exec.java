@@ -2,18 +2,17 @@
 // Last Edit - 9/11/17
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Random;
+import java.util.*;
 
 public class exec {
     // create the map to store the pos int & synapse dta
     private final Map<String, synapse> db = new HashMap<>();
 
     // storage string for training output
-    String train_output = "";
-    String train_input = "";
+    String[] train_output = new String[30];
+    String[] train_input = new String[30];
+    Integer[] threshold = new Integer[30];
+    Integer GLOBAL_COUNTER = 0;
 
 
     // menu printing
@@ -23,7 +22,7 @@ public class exec {
         System.out.println("0. Display network (might take a long time)");
         System.out.println("1. Train");
         System.out.println("2. Test");
-        System.out.println("3. Hamming difference");
+        System.out.println("3. Test with threshold");
         System.out.println("4. Exit");
     }
 
@@ -72,10 +71,13 @@ public class exec {
         op_o = trim_custom(out); // call the trim method
 
         // Store the output to the variable
-        train_output = op_o;
+        train_output[GLOBAL_COUNTER] = op_o;
 
         // Store the input to the variable
-        train_input = op_i;
+        train_input[GLOBAL_COUNTER] = op_i;
+
+        // increment the global counter
+        GLOBAL_COUNTER ++;
 
         for (int x = 0; x < inp.length(); x++) {
             // splice input
@@ -97,11 +99,6 @@ public class exec {
                         // change fire-state
                         db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(1);
                     }
-                }else{
-                    // change weight
-                    db.get(String.valueOf(y) + String.valueOf(x)).setWeight(0);
-                    // change fire-state
-                    db.get(String.valueOf(y) + String.valueOf(x)).setFire_state(0);
                 }
             }
         }
@@ -154,13 +151,74 @@ public class exec {
         return x; // return the string
     }
 
+    // calculate the hamming distance function
+    private String calc_distance(String inp, String inp_list[]){
+        // the function checks the input
+        // vs. the input list provided
+        // produces the closest matching one
+
+        for(String current_inp : inp_list){
+            // go through the list
+
+            Integer counter = 0; // new counter
+
+            // first add an element in the array list
+            threshold[counter] = 0;
+
+
+            for (int i = 0; i < current_inp.length(); i++){
+                // q1 is the char in the list input
+                char q1 = current_inp.charAt(i);
+                // q2 is the char in the actual input
+                char q2 = inp.charAt(i);
+                //Process char
+
+                try{
+                    if(q1!=q2){
+                        threshold[counter] += 1; // add 1 to the threshold
+                    }
+                }catch(Exception e){
+                    // length mismatch, assume 0
+                    q2 = '0';
+                    if(q1!=q2){
+                        threshold[counter] += 1; // add 1 to the threshold
+                    }
+                }
+            }
+
+            counter++; // add 1 to the counter, to create a new array element
+        }
+
+        // after the for loop return the output from the list, with the lowest
+        // threshold
+
+        Integer lowest = threshold[0]; // assume the lowest is the first el
+        Integer index_of = 0; // init the id
+        Integer count = 0; // init a counter
+
+        for(Integer l1 : threshold){
+            // for each el in the array
+            if(l1 < threshold[count]){
+                // if it's lower, this is the new lowest
+                lowest = threshold[count];
+                index_of = count; // assign the lowest index as the current count
+            }
+
+            count++; // increment
+        }
+
+        // we have the id of the lowest element
+
+        return inp_list[index_of];
+    }
+
     public static void main(String args[]) {
         // init the class
         exec ex_main = new exec();
 
         Scanner reader = new Scanner(System.in);  // Reading from System.in
         System.out.println("0 to exit");
-        System.out.println("Enter a number (min 4): ");
+        System.out.println("Enter a number (x=synapses/2) x: ");
         int n = reader.nextInt(); // Scans the next token of the input as an int.
 
         ex_main.generate_network(n); // gen the network
@@ -228,101 +286,231 @@ public class exec {
 
                 out = reader.next(); // store the input
 
-                // Check if the input matches the length
-                if(inp.length() == n/2){
-                    // matches
+                // time the execution
+                Instant startT = Instant.now(); // define the starter
 
-                    // time the execution
-                    Instant startT = Instant.now(); // define the starter
+                // update UI
+                System.out.println("-------");
+                System.out.print("Working");
 
-                    // update UI
-                    System.out.println("-------");
-                    System.out.print("Working");
+                String gen_out = ""; // define the storage string
 
-                    String gen_out = ""; // define the storage string
-                    String current_out = ""; // overridable string
+                // push zeros to fill the output
+                for (int ch1 = 0; ch1 < n/2; ch1++){
+                    gen_out+="0";
+                }
 
-                    // push zeros to fill the output
-                    for (int ch1 = 0; ch1 < n/2; ch1++){
-                        gen_out+="0";
-                    }
+                // create a char array
+                char[] toChar1 = gen_out.toCharArray();
 
-                    // create a char array
-                    char[] toChar1 = gen_out.toCharArray();
+                // FIRST - trim all spaces
+                String op_i; // def
+                String op_o; // def
+                op_i = ex_main.trim_custom(inp); // call the trim method
+                op_o = ex_main.trim_custom(out); // call the trim method
 
-                    // FIRST - trim all spaces
-                    String op_i; // def
-                    String op_o; // def
-                    op_i = ex_main.trim_custom(inp); // call the trim method
-                    op_o = ex_main.trim_custom(out); // call the trim method
+                for (int y = 0; y < n/2; y++) {
+                    // for each column
+                    for (int x = 0; x < n/2; x++) {
+                        // for each row
+                        try{
+                            // try to fetch the next value
 
-                    for (int y = 0; y < n/2; y++) {
-                        // for each column
-                        for (int x = 0; x < n/2; x++) {
-                            // for each row
                             op_i = inp.substring(y, y + 1); // splice the string
-
-                            // get the current synapse
-                            synapse s1 = ex_main.db.get(String.valueOf(x) + String.valueOf(y));
-
-                            // check the synapse pointers
-                            if (op_i.equals("1")) {
-                                if(s1.getWeight() == 1){
-                                    toChar1[x] = '1';
-                                }else{
-                                    toChar1[x] = '0';
-                                }
-                            }
+                        }catch(Exception e){
+                            // failure, usually due to the lenght of the input
+                            op_i = "0";
                         }
 
-                        // update the whole string
-                        gen_out = String.valueOf(toChar1);
+                        // get the current synapse
+                        synapse s1 = ex_main.db.get(String.valueOf(x) + String.valueOf(y));
 
-                        // update UI
-                        System.out.print(".");
+                        // check the synapse pointers
+                        if (op_i.equals("1")) {
+                            if(s1.getWeight() == 1){
+                                toChar1[x] = '1';
+                            }
+                        }
                     }
 
-                    Instant endT = Instant.now(); // end the timer
+                    // update the whole string
+                    gen_out = String.valueOf(toChar1);
 
-                    System.out.println("\n--------------");
-                    // update the UI
-                    // display timing message
-                    System.out.println("Time taken: " + (Duration.between(startT, endT)));
-                    System.out.println("Generated output          --> " + gen_out);
-                    System.out.println("Original output           --> " + op_o);
-                }else{
-                    // output must match
-                    System.out.println("Input must match nodes. Halting.");
+                    // update UI
+                    System.out.print(".");
                 }
+
+                Instant endT = Instant.now(); // end the timer
+
+                System.out.println("\n--------------");
+                // update the UI
+                // display timing message
+                System.out.println("Time taken: " + (Duration.between(startT, endT)));
+                System.out.println("Generated output          --> " + gen_out);
             }else if (input == 0){
                 ex_main.print_out(n); // call the print method
 
             }else if (input == 3){
-                // Testing with Hamming differences
-                System.out.println("------------");
-                System.out.println("Start with empty network");
-                System.out.println("Train at least 2 times !");
+                // Test
 
-                // define the storage vars
-                String inputs[]; // def
-                String outputs[]; // def
-                String inp_x; // def
-                String out_x; // def
+                // the user must parse an output
+                // the algorithm then produces the input
+                // based on the network
 
+                System.out.println(n);
 
-                // ask for the initial input/outputs
-                System.out.println("------------");
+                System.out.println("Make sure you've trained with 2+ pairs");
+
+                String diff_indeces = ""; // define the string
+
+                System.out.println("--------------------------");
                 System.out.println("Enter the input: ");
 
-                inp_x = reader.next(); // capture input
+                inp = reader.next(); // store the input
 
-                System.out.println("------------");
+                System.out.println("--------------------------");
                 System.out.println("Enter the output: ");
 
-                out_x = reader.next(); // capture output
+                out = reader.next(); // store the input
 
-                // call the train network method
-                ex_main.train_network(inp_x, out_x);
+                // time the execution
+                Instant startT = Instant.now(); // define the starter
+
+                // update UI
+                System.out.println("-------");
+                System.out.print("Working");
+
+                String gen_out = ""; // define the storage string
+
+                Integer[] threshold = new Integer[n/2];
+                Integer threshold_count = 0;
+                Integer threshold_initial = 0;
+
+                // push zeros to fill the output
+                for (int ch1 = 0; ch1 < n/2; ch1++){
+                    gen_out+="0";
+                }
+
+                // create a char array
+                char[] toChar1 = gen_out.toCharArray();
+
+                // calculate the initial threshold
+                // parse the input as a char array
+                char[] inp_char = ex_main.trim_custom(inp).toCharArray();
+
+                for(char x : inp_char){
+                    System.out.println("@@ : " + String.valueOf(x));
+
+                    if(x == '1'){
+                        // increment the initial threshold, from the entered input
+                        threshold_initial++;
+
+                    }
+                }
+
+                System.out.println("Total TH: " + String.valueOf(threshold_initial));
+                /**
+
+                Integer[] count_trained = new Integer[30]; // init the threshold for trained
+                Integer count_local = 0;
+                Integer other_local = 0;
+
+                // check the trained inputs as well
+                for(String tr1 : this.train_input){
+                    char[] to_char = tr1.toCharArray(); // split into chars
+
+                    // check each char
+                    for(char ch1 : to_char){
+                        if(ch1 == '1'){
+                            other_local++;
+                        }
+                    }
+
+                    count_trained[count_local] = other_local;
+
+                    count_local++;
+                }
+                 */
+
+                // FIRST - trim all spaces
+                String op_i; // def
+                String op_o; // def
+                op_i = ex_main.trim_custom(inp); // call the trim method
+                op_o = ex_main.trim_custom(out); // call the trim method
+
+                for (int x = 0; x < n/2; x++) {
+                    // for each column
+
+                    threshold_count = 0; // reset the counter
+
+                    for (int y = 0; y < n/2; y++) {
+                        // for each row
+                        try{
+                            // try to fetch the next value
+
+                            op_i = inp.substring(x, x + 1); // splice the string
+                        }catch(Exception e){
+                            // failure, usually due to the lenght of the input
+                            op_i = "0";
+                        }
+
+                        // get the current synapse
+                        synapse s1 = ex_main.db.get(String.valueOf(x) + String.valueOf(y));
+
+                        // check the synapse pointers
+                        if (op_i.equals("1")) {
+                            // increase the threshold
+                            threshold_count++;
+
+                            if(s1.getWeight() == 1){
+                                toChar1[x] = '1';
+
+                                // increase the threshold
+                                threshold_count++;
+                            }
+
+                            // MIGHT BE OBSOLETE
+                            //else{
+                               // toChar1[x] = '0';
+
+                                // increase the threshold
+                                //threshold_count++;
+                            //}
+                        }
+                    }
+
+                    // update the whole string
+                    gen_out = String.valueOf(toChar1);
+
+                    // update the threshold
+                    threshold[x] = threshold_count;
+
+                    // update UI
+                    System.out.print(".");
+                }
+
+                Instant endT = Instant.now(); // end the timer
+
+                String to_print = "";
+
+
+                // consider the threshold
+                for(Integer x : threshold){
+                    System.out.println(x);
+
+                    if(x >= threshold_initial){
+                        to_print += "1";
+                    }else{
+                        to_print += "0";
+                    }
+                }
+
+
+                System.out.println("\n--------------");
+                // update the UI
+                // display timing message
+                System.out.println("Time taken: " + (Duration.between(startT, endT)));
+                System.out.println("Generated: " + to_print);
 
             }else if(input == 4){
                 n = 0;
