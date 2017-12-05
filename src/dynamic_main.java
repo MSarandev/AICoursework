@@ -1,10 +1,14 @@
 // Created by Maxim Sarandev - 1406519
 // Last Edit - 9/11/17
+
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
 
-public class exec {
+public class dynamic_main {
     // create the map to store the pos int & synapse dta
     private final Map<String, synapse> db = new HashMap<>();
 
@@ -213,7 +217,7 @@ public class exec {
 
     public static void main(String args[]) {
         // init the class
-        exec ex_main = new exec();
+        dynamic_main ex_main = new dynamic_main();
 
         Scanner reader = new Scanner(System.in);  // Reading from System.in
         System.out.println("0 to exit");
