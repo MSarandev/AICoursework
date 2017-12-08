@@ -1,18 +1,18 @@
 // Created by Maxim Sarandev - 1406519
-// Last Edit - 9/11/17
+// Last Edit - 9/12/17
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
 public class exec {
     // create the map to store the pos int & synapse dta
-    private final Map<String, synapse> db = new HashMap<>();
+    public final Map<String, synapse> db = new HashMap<>();
 
     // storage string for training output
-    String[] train_output = new String[30];
-    String[] train_input = new String[30];
-    Integer[] threshold = new Integer[30];
-    Integer GLOBAL_COUNTER = 0;
+    public String[] train_output = new String[30];
+    public String[] train_input = new String[30];
+    public Integer[] threshold = new Integer[30];
+    public Integer GLOBAL_COUNTER = 0;
 
 
     // menu printing
@@ -26,7 +26,7 @@ public class exec {
     }
 
     // generate an empty network based on num of synapses
-    private void generate_network(int n) {
+    public void generate_network(int n) {
         if (n >= 4) {
             Instant startT = Instant.now(); // define the starter
 
@@ -57,7 +57,7 @@ public class exec {
     }
 
     // train the network
-    private void train_network(String i1, String o1){
+    public void train_network(String i1, String o1){
         String inp = i1; // define the input string
         String out = o1; // define the output string
 
@@ -108,7 +108,7 @@ public class exec {
     }
 
     // print out the NN
-    private void print_out(int n){
+    public void print_out(int n){
         // Print out the neural network
         for (int x = 0; x < n / 2; x++) {
             for (int y = 0; y < n / 2; y++) {
@@ -122,7 +122,7 @@ public class exec {
     }
 
     // generate a random input/output string
-    private String generate_me(int x){
+    public String generate_me(int x){
         // define the container
         String returnX = "";
 
@@ -144,7 +144,7 @@ public class exec {
     }
 
     // generic trim spaces method
-    private String trim_custom(String x){
+    public String trim_custom(String x){
         x = x.replaceAll("\\s+", ""); //trim input
 
         return x; // return the string
@@ -317,7 +317,7 @@ public class exec {
 
                             op_i = inp.substring(y, y + 1); // splice the string
                         }catch(Exception e){
-                            // failure, usually due to the lenght of the input
+                            // failure, usually due to the length of the input
                             op_i = "0";
                         }
 

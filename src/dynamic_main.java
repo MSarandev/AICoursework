@@ -1,5 +1,5 @@
 // Created by Maxim Sarandev - 1406519
-// Last Edit - 9/11/17
+// Last Edit - 5/12/17
 
 import java.time.Duration;
 import java.time.Instant;
@@ -220,7 +220,10 @@ public class dynamic_main {
         dynamic_main ex_main = new dynamic_main();
 
         Scanner reader = new Scanner(System.in);  // Reading from System.in
-        System.out.println("0 to exit");
+        System.out.println("---------------------------------");
+        System.out.println("Binary synapse weights (1/0)");
+        System.out.println("---------------------------------");
+        System.out.println("9 to exit");
         System.out.println("Enter a number (x=synapses/2) x: ");
         int n = reader.nextInt(); // Scans the next token of the input as an int.
 
