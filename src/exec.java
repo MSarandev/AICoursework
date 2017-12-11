@@ -78,6 +78,8 @@ public class exec {
         // increment the global counter
         GLOBAL_COUNTER ++;
 
+        Instant startT = Instant.now(); // define the starter
+
         for (int x = 0; x < inp.length(); x++) {
             // splice input
             op_i = inp.substring(x, x + 1);
@@ -101,9 +103,14 @@ public class exec {
                 }
             }
         }
+        Instant endT = Instant.now(); // end the timer
+
+
         // network trained
         System.out.println("--------");
         System.out.println("Network trained!");
+        // display timing message
+        System.out.println("Time taken: " + (Duration.between(startT, endT)));
 
     }
 
@@ -281,7 +288,7 @@ public class exec {
                 inp = reader.next(); // store the input
 
                 System.out.println("--------------------------");
-                System.out.println("Enter the output: ");
+                System.out.println("Enter the output (default - 0): ");
 
                 out = reader.next(); // store the input
 
